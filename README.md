@@ -1,6 +1,6 @@
-# gatsby-source-pocket
-
 **Example Site**: https://conradj.co.uk/weeklyreads/ (source: https://github.com/conradj/pocket-public-archive)
+
+# gatsby-source-pocket
 
 Fetch data from Pocket API.
 
@@ -36,6 +36,7 @@ module.exports = {
 
 * **weeksOfHistory**: Number of weeks worth of articles to fetch
 * **apiMaxRecordsToReturn**: Limit the number of records to return, to stop you hitting your [api limit](https://getpocket.com/developer/docs/rate-limits).
+* **getCurrentWeekOnly**: `n` will fetch data based on the settings above. `y` returns the current week and the last week (it'll make sense when you try it).
 
 ## How to query your Pocket articles data using GraphQL
 
