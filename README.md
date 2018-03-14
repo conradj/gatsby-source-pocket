@@ -1,8 +1,11 @@
-**Example Site**: https://conradj.co.uk/weeklyreads/ (source: https://github.com/conradj/pocket-public-archive)
-
 # gatsby-source-pocket
 
 Fetch data from Pocket API.
+
+An example site for this plugin is available:
+
+* **[Demo](https://conradj.co.uk/weeklyreads/)**
+* **[Example site source code](https://github.com/conradj/pocket-public-archive)**
 
 ## How to Use
 
@@ -10,8 +13,9 @@ Fetch data from Pocket API.
 
 2.  Go to https://getpocket.com/developer/ and create a new app to get your consumer key.
 
-3.  Run `node node_modules/node-getpocket/authorise --consumerkey 'YOUR-CONSUMER-KEY'` and point your browser to http://127.0.0.1:8080. This will get your `POCKET_ACCESS_TOKEN` string to put in `.env`.
-    (For more info on this process see https://github.com/vicchi/node-getpocket)
+3.  Run `node node_modules/node-getpocket/authorise --consumerkey 'YOUR-CONSUMER-KEY'` and point your browser to http://127.0.0.1:8080to get your `POCKET_ACCESS_TOKEN` string.
+
+    For more info on this process see https://github.com/vicchi/node-getpocket, which this plugin uses to talk to the Pocket API.
 
 4.  In your gatsby-config.js
 
