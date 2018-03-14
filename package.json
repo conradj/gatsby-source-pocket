@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-pocket",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fetch data from Pocket API",
   "main": "gatsby-node.js",
   "scripts": {
@@ -18,11 +18,7 @@
     "type": "git",
     "url": "https://github.com/conradj/gatsby-source-pocket"
   },
-  "homepage": "https://github.com/conradj/gatsby-source-pocket/blob/master/README.md",
-  "keywords": [
-    "gatsby",
-    "gatsbyjs",
-    "gatsby-plugin",
-    "pocket"
-  ]
+  "homepage":
+    "https://github.com/conradj/gatsby-source-pocket/blob/master/README.md",
+  "keywords": ["gatsby", "gatsbyjs", "gatsby-plugin", "pocket"]
 }
