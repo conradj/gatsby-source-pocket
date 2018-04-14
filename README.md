@@ -29,7 +29,16 @@ module.exports = {
         accessToken: INSERT_HERE_YOUR_POCKET_ACCESS_TOKEN,
         weeksOfHistory: 52,
         apiMaxRecordsToReturn: 3000,
-        getCurrentWeekOnly: `n`
+        getCurrentWeekOnly: `n`,
+        stateFilterString: "archive",
+        tagFilter: false,
+        tagFilterString: "_untagged_",
+        favouriteFilter: false,
+        favouriteFilterValue: 0,
+        searchFilter: false,
+        searchFilterString: "These 21 things",
+        domainFilter: false,
+        domainFilterString: "buzzfeed.com"
       }
     }
   ]
@@ -40,7 +49,31 @@ module.exports = {
 
 * **weeksOfHistory**: Number of weeks worth of articles to fetch
 * **apiMaxRecordsToReturn**: Limit the number of records to return, to stop you hitting your [api limit](https://getpocket.com/developer/docs/rate-limits).
-* **getCurrentWeekOnly**: `n` will fetch data based on the settings above. `y` returns the current week and the last week (it'll make sense when you try it).
+* **getCurrentWeekOnly**:
+  * `n` will fetch data based on the settings above.
+  * `y` returns the current week and the last week (it'll make sense when you try it).
+* **stateFilterString**:
+  * `unread` = only return unread items.
+  * `archive` = only return archived items.
+  * `all` = return both unread and archived items.
+* **tagFilter**:
+  * `true` will use the `tagFilterString` value to get articles with that tag.
+  * `false` will ignore the `tagFilterString` value
+* **tagFilterString**: If `tagFilter` is true then get articles tagged with this value. `'\_untagged\_'` will only return articles with no tags.
+* **favouriteFilter** (note UK English spelling!):
+  * `true` will use the `favouriteFilterValue` to get articles that have/have not been favourited in Pocket
+  * `false` will ignore the `favouriteFilterValue`
+* **favouriteFilterValue**:
+  * `0` = only return un-favorited items
+  * `1` = only return favorited items
+* **searchFilter**:
+  * `true` will use the `searchFilterString` value to get articles with that value in the URL or title.
+  * `false` will ignore the `searchFilterString` value
+* **searchFilterString**: If `searchFilter` is true then get articles with this value in the URL or title.
+* **domainFilter**:
+  * `true` will use the `domainFilterString` value to get articles for that domain.
+  * `false` will ignore the `domainFilterString` value
+* **domainFilterString**: If `domainFilter` is true then get articles from this domain.
 
 ## How to query your Pocket articles data using GraphQL
 

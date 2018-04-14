@@ -34,15 +34,7 @@ function getPocketArticles(sinceDate, pluginOptions) {
       reject("set a pocket start date in options");
     }
 
-    const params = {
-      // get/retrieve/search parameters.
-      // See https://getpocket.com/developer/docs/v3/retrieve for full list of available params.
-      sort: "newest",
-      count: parseInt(pluginOptions.apiMaxRecordsToReturn),
-      detailType: "complete",
-      state: "archive",
-      since: unixTimeToGetArticlesFrom
-    };
+    const params = getApiParamOptions(pluginOptions, unixTimeToGetArticlesFrom);
 
     pocket.get(params, function(err, resp) {
       // check err or handle the response
@@ -52,6 +44,41 @@ function getPocketArticles(sinceDate, pluginOptions) {
       resolve(convertResultsToArticlesArray(resp));
     });
   });
+}
+
+function getApiParamOptions(pluginOptions, unixTimeToGetArticlesFrom) {
+  // get/retrieve/search parameters.
+  // See https://getpocket.com/developer/docs/v3/retrieve for full list of available params.
+
+  let params = {
+    sort: "newest",
+    count: parseInt(pluginOptions.apiMaxRecordsToReturn),
+    detailType: "complete",
+    state: pluginOptions.stateFilterString,
+    since: unixTimeToGetArticlesFrom
+  };
+
+  // now do optional parameters
+  if (pluginOptions.tagFilter) {
+    params.tag = pluginOptions.tagFilterString;
+  }
+
+  if (pluginOptions.favouriteFilter) {
+    params.favorite = pluginOptions.favouriteFilterValue;
+  }
+
+  if (pluginOptions.tagFilter) {
+    params.tag = pluginOptions.tagFilterString;
+  }
+
+  if (pluginOptions.searchFilter) {
+    params.search = pluginOptions.searchFilterString;
+  }
+
+  if (pluginOptions.domainFilter) {
+    params.domain = pluginOptions.domainFilterString;
+  }
+  return params;
 }
 
 function convertResultsToArticlesArray(pocketApiResults) {
