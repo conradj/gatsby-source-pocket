@@ -87,13 +87,13 @@ function convertResultsToArticlesArray(pocketApiResults) {
   });
 }
 
-exports.sourceNodes = async ({ boundActionCreators }, pluginOptions) => {
+exports.sourceNodes = async ({ actions }, pluginOptions) => {
   const importStartDate = subWeeks(
     startOfWeek(new Date()),
     pluginOptions.weeksOfHistory
   );
 
-  const { createNode, touchNode } = boundActionCreators;
+  const { createNode, touchNode } = actions;
   // get the data since the last time it was run, or from the earliest week
   const data = await getPocketArticles(importStartDate, pluginOptions);
 
@@ -149,6 +149,6 @@ exports.sourceNodes = async ({ boundActionCreators }, pluginOptions) => {
       }
     });
 
-    touchNode(datum.item_id);
+    touchNode({ nodeId: datum.item_id });
   });
 };
