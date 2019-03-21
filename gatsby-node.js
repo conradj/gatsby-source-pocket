@@ -132,6 +132,7 @@ exports.sourceNodes = async ({ actions }, pluginOptions) => {
       has_video: datum.has_video == true,
       has_image: datum.has_image == true,
       word_count: parseInt(datum.word_count),
+      tags: Object.keys(datum.tags),
       time_added: datum.time_added,
       time_updated: datum.time_updated,
       time_read: parseInt(datum.time_read),

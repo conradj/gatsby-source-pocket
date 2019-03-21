@@ -94,6 +94,7 @@ query PageQuery {
         has_video
         has_image
         word_count
+        tags
         time_read
         readWeek
         articleDomain
