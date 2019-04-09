@@ -114,6 +114,8 @@ exports.sourceNodes = async ({ actions }, pluginOptions) => {
         ? new URL(datum.resolved_url).hostname
         : "";
 
+    const authors = datum.authors ? Object.keys(datum.authors) : [];
+
     const node = createNode({
       // Data for the node.
       id: datum.item_id,
@@ -124,6 +126,7 @@ exports.sourceNodes = async ({ actions }, pluginOptions) => {
       title: datum.resolved_title,
       articleDomain: articleDomain,
       domainFavicon: `https://s2.googleusercontent.com/s2/favicons?domain_url=${articleDomain}`,
+      authors: authors,
       favourite: datum.favorite == true,
       favorite: datum.favorite == true,
       excerpt: datum.excerpt,
