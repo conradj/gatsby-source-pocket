@@ -114,7 +114,24 @@ exports.sourceNodes = async ({ actions }, pluginOptions) => {
         ? new URL(datum.resolved_url).hostname
         : "";
 
-    const authors = datum.authors ? Object.keys(datum.authors) : [];
+    const authors = datum.authors
+      ? Object.values(datum.authors).map(author =>
+          createNode({
+            ...author,
+            id: author.item_id,
+            parent: datum.item_id,
+            children: [],
+            internal: {
+              type: `PocketArticleAuthor`,
+              contentDigest: crypto
+                .createHash(`md5`)
+                .update(JSON.stringify(datum))
+                .digest(`hex`)
+            }
+          })
+        )
+      : [];
+
     const tags = datum.tags ? Object.keys(datum.tags) : [];
 
     const node = createNode({
@@ -127,7 +144,7 @@ exports.sourceNodes = async ({ actions }, pluginOptions) => {
       title: datum.resolved_title,
       articleDomain: articleDomain,
       domainFavicon: `https://s2.googleusercontent.com/s2/favicons?domain_url=${articleDomain}`,
-      authors: authors,
+      authors,
       favourite: datum.favorite == true,
       favorite: datum.favorite == true,
       excerpt: datum.excerpt,
