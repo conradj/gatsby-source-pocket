@@ -87,12 +87,6 @@ query PageQuery {
         id
         url
         title
-        authors {
-          item_id
-          author_id
-          name
-          url
-        }
         favourite
         excerpt
         is_article
