@@ -1,3 +1,4 @@
+const startOfDay = require("date-fns/start_of_day");
 const startOfWeek = require("date-fns/start_of_week");
 const format = require("date-fns/format");
 const subWeeks = require("date-fns/sub_weeks");
@@ -119,6 +120,9 @@ exports.sourceNodes = async ({ actions }, pluginOptions) => {
     const node = createNode({
       // Data for the node.
       id: datum.item_id,
+      readDay: parseInt(
+        format(startOfDay(new Date(parseInt(datum.time_read) * 1000)), "X")
+      ),
       readWeek: parseInt(
         format(startOfWeek(new Date(parseInt(datum.time_read) * 1000)), "X")
       ),
