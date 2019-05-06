@@ -96,6 +96,7 @@ query PageQuery {
         word_count
         tags
         time_read
+        readDay
         readWeek
         articleDomain
         domainFavicon
