@@ -7,6 +7,11 @@ An example site for this plugin is available:
 - **[Demo](https://conradj.co.uk/weeklyreads/)**
 - **[Example site source code](https://github.com/conradj/pocket-public-archive)**
 
+## Breaking changes
+
+- v3.x - for `Gatsby@4`
+- v2.x - for `Gatsby@3` and lower
+
 ## How to Use
 
 1.  `npm install --save gatsby-source-pocket`
