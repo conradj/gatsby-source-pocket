@@ -1,23 +1,15 @@
-const startOfDay = require("date-fns/start_of_day");
-const startOfWeek = require("date-fns/start_of_week");
+const startOfDay = require("date-fns/startOfDay");
+const startOfWeek = require("date-fns/startOfWeek");
 const format = require("date-fns/format");
-const subWeeks = require("date-fns/sub_weeks");
-const getTime = require("date-fns/get_time");
+const subWeeks = require("date-fns/subWeeks");
 const { URL } = require("url");
-const crypto = require("crypto");
-
-const createContentDigest = obj =>
-  crypto
-    .createHash("md5")
-    .update(JSON.stringify(obj))
-    .digest("hex");
 
 function getPocketArticles(sinceDate, pluginOptions) {
   return new Promise((resolve, reject) => {
     const GetPocket = require("node-getpocket");
     const config = {
       consumer_key: pluginOptions.consumerKey,
-      access_token: pluginOptions.accessToken
+      access_token: pluginOptions.accessToken,
     };
     const pocket = new GetPocket(config);
     let lastGeneratedDateStamp = sinceDate;
@@ -37,7 +29,7 @@ function getPocketArticles(sinceDate, pluginOptions) {
 
     const params = getApiParamOptions(pluginOptions, unixTimeToGetArticlesFrom);
 
-    pocket.get(params, function(err, resp) {
+    pocket.get(params, function (err, resp) {
       // check err or handle the response
       if (err) {
         reject(err);
@@ -56,7 +48,7 @@ function getApiParamOptions(pluginOptions, unixTimeToGetArticlesFrom) {
     count: parseInt(pluginOptions.apiMaxRecordsToReturn),
     detailType: "complete",
     state: pluginOptions.stateFilterString,
-    since: unixTimeToGetArticlesFrom
+    since: unixTimeToGetArticlesFrom,
   };
 
   // now do optional parameters
@@ -83,30 +75,38 @@ function getApiParamOptions(pluginOptions, unixTimeToGetArticlesFrom) {
 }
 
 function convertResultsToArticlesArray(pocketApiResults) {
-  return Object.keys(pocketApiResults.list).map(function(value, articleIndex) {
+  return Object.keys(pocketApiResults.list).map(function (value, articleIndex) {
     return pocketApiResults.list[value];
   });
 }
 
-exports.sourceNodes = async ({ actions }, pluginOptions) => {
+const POCKET_ARTICLE_NODE_TYPE = "PocketArticle";
+
+exports.sourceNodes = async (
+  { actions, createNodeId, createContentDigest, getNodesByType },
+  pluginOptions
+) => {
   const importStartDate = subWeeks(
     startOfWeek(new Date()),
     pluginOptions.weeksOfHistory
   );
 
   const { createNode, touchNode } = actions;
+
+  getNodesByType(POCKET_ARTICLE_NODE_TYPE).forEach((node) => touchNode(node));
+
   // get the data since the last time it was run, or from the earliest week
   const data = await getPocketArticles(importStartDate, pluginOptions);
 
   // Process data into nodes.
-  data.forEach(datum => {
+  data.forEach((datum) => {
     const image =
       datum.has_image && datum.image
         ? {
             item_id: datum.item_id,
             src: datum.image.src,
             width: datum.image.width,
-            height: datum.image.height
+            height: datum.image.height,
           }
         : null;
 
@@ -117,9 +117,9 @@ exports.sourceNodes = async ({ actions }, pluginOptions) => {
 
     const tags = datum.tags ? Object.keys(datum.tags) : [];
 
-    const node = createNode({
+    createNode({
       // Data for the node.
-      id: datum.item_id,
+      id: createNodeId(`${POCKET_ARTICLE_NODE_TYPE}-${datum.item_id}`),
       readDay: parseInt(
         format(startOfDay(new Date(parseInt(datum.time_read) * 1000)), "X")
       ),
@@ -147,15 +147,10 @@ exports.sourceNodes = async ({ actions }, pluginOptions) => {
       parent: null, //`the-id-of-the-parent-node`, // or null if it's a source node without a parent
       children: [],
       internal: {
-        type: `PocketArticle`,
-        contentDigest: crypto
-          .createHash(`md5`)
-          .update(JSON.stringify(datum))
-          .digest(`hex`),
-        content: JSON.stringify(datum) // optional
-      }
+        type: POCKET_ARTICLE_NODE_TYPE,
+        contentDigest: createContentDigest(datum),
+        content: JSON.stringify(datum), // optional
+      },
     });
-
-    touchNode({ nodeId: datum.item_id });
   });
 };
