@@ -1,48 +1,36 @@
+const pocketService = require("./pockerService");
 const startOfDay = require("date-fns/startOfDay");
 const startOfWeek = require("date-fns/startOfWeek");
 const format = require("date-fns/format");
 const subWeeks = require("date-fns/subWeeks");
 const { URL } = require("url");
 
-function getPocketArticles(sinceDate, pluginOptions) {
-  return new Promise((resolve, reject) => {
-    const GetPocket = require("node-getpocket");
-    const config = {
-      consumer_key: pluginOptions.consumerKey,
-      access_token: pluginOptions.accessToken,
-    };
-    const pocket = new GetPocket(config);
-    let lastGeneratedDateStamp = sinceDate;
+function getUnixTimeToGetArticlesFrom(pluginOptions) {
+  // get the data since the last time it was run, or from the earliest week
+  let lastGeneratedDateStamp = subWeeks(
+    startOfWeek(new Date()),
+    pluginOptions.weeksOfHistory
+  );
 
-    // override - usually used in prod just to update current and last week on a nightly update after the first full generation.
-    if (pluginOptions.getCurrentWeekOnly.toLowerCase() === "y") {
-      lastGeneratedDateStamp = startOfWeek(subWeeks(new Date(), 1));
-    }
+  // override - usually used in prod just to update current and last week on a nightly update after the first full generation.
+  if (pluginOptions.getCurrentWeekOnly.toLowerCase() === "y") {
+    lastGeneratedDateStamp = startOfWeek(subWeeks(new Date(), 1));
+  }
 
-    const unixTimeToGetArticlesFrom = parseInt(
-      Date.parse(lastGeneratedDateStamp) / 1000
-    );
+  const unixTimeToGetArticlesFrom = parseInt(
+    Date.parse(lastGeneratedDateStamp) / 1000
+  );
 
-    if (isNaN(unixTimeToGetArticlesFrom)) {
-      reject("set a pocket start date in options");
-    }
+  if (isNaN(unixTimeToGetArticlesFrom)) {
+    throw new Error("set a pocket start date in options");
+  }
 
-    const params = getApiParamOptions(pluginOptions, unixTimeToGetArticlesFrom);
-
-    pocket.get(params, function (err, resp) {
-      // check err or handle the response
-      if (err) {
-        reject(err);
-      }
-      resolve(convertResultsToArticlesArray(resp));
-    });
-  });
+  return unixTimeToGetArticlesFrom;
 }
 
-function getApiParamOptions(pluginOptions, unixTimeToGetArticlesFrom) {
+function getApiParamOptions(unixTimeToGetArticlesFrom, pluginOptions) {
   // get/retrieve/search parameters.
   // See https://getpocket.com/developer/docs/v3/retrieve for full list of available params.
-
   let params = {
     sort: "newest",
     count: parseInt(pluginOptions.apiMaxRecordsToReturn),
@@ -74,10 +62,10 @@ function getApiParamOptions(pluginOptions, unixTimeToGetArticlesFrom) {
   return params;
 }
 
-function convertResultsToArticlesArray(pocketApiResults) {
-  return Object.keys(pocketApiResults.list).map(function (value, articleIndex) {
-    return pocketApiResults.list[value];
-  });
+function pocketResponseToArticlesArray(pocketApiResults) {
+  return Object.keys(pocketApiResults.list).map(
+    (value) => pocketApiResults.list[value]
+  );
 }
 
 const POCKET_ARTICLE_NODE_TYPE = "PocketArticle";
@@ -86,19 +74,26 @@ exports.sourceNodes = async (
   { actions, createNodeId, createContentDigest, getNodesByType },
   pluginOptions
 ) => {
-  const importStartDate = subWeeks(
-    startOfWeek(new Date()),
-    pluginOptions.weeksOfHistory
-  );
-
   const { createNode, touchNode } = actions;
 
   getNodesByType(POCKET_ARTICLE_NODE_TYPE).forEach((node) => touchNode(node));
 
-  // get the data since the last time it was run, or from the earliest week
-  const data = await getPocketArticles(importStartDate, pluginOptions);
+  const pocketClient = pocketService.initPocketClient(
+    pluginOptions.consumerKey,
+    pluginOptions.accessToken
+  );
 
-  // Process data into nodes.
+  const pocketCallParams = getApiParamOptions(
+    getUnixTimeToGetArticlesFrom(pluginOptions),
+    pluginOptions
+  );
+
+  const resp = await pocketService
+    .fetchArticles(pocketClient, pocketCallParams)
+    .catch((e) => console.log(e));
+
+  const data = pocketResponseToArticlesArray(resp);
+
   data.forEach((datum) => {
     const image =
       datum.has_image && datum.image
@@ -110,15 +105,13 @@ exports.sourceNodes = async (
           }
         : null;
 
-    const articleDomain =
-      datum.resolved_url && datum.resolved_url !== ""
-        ? new URL(datum.resolved_url).hostname
-        : "";
+    const articleDomain = Boolean(datum.resolved_url)
+      ? new URL(datum.resolved_url).hostname
+      : "";
 
     const tags = datum.tags ? Object.keys(datum.tags) : [];
 
     createNode({
-      // Data for the node.
       id: createNodeId(`${POCKET_ARTICLE_NODE_TYPE}-${datum.item_id}`),
       readDay: parseInt(
         format(startOfDay(new Date(parseInt(datum.time_read) * 1000)), "X")
