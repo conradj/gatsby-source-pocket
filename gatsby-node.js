@@ -111,14 +111,14 @@ exports.sourceNodes = async (
 
     const tags = datum.tags ? Object.keys(datum.tags) : [];
 
+    const readDay = datum.time_read ? parseInt(format(startOfDay(new Date(parseInt(datum.time_read) * 1000)), "X")) : 0
+
+    const readWeek = datum.time_read ? parseInt(format(startOfWeek(new Date(parseInt(datum.time_read) * 1000)), "X")) : 0
+
     createNode({
       id: createNodeId(`${POCKET_ARTICLE_NODE_TYPE}-${datum.item_id}`),
-      readDay: parseInt(
-        format(startOfDay(new Date(parseInt(datum.time_read) * 1000)), "X")
-      ),
-      readWeek: parseInt(
-        format(startOfWeek(new Date(parseInt(datum.time_read) * 1000)), "X")
-      ),
+      readDay: readDay,
+      readWeek: readWeek,
       url: datum.resolved_url,
       title: datum.resolved_title,
       articleDomain: articleDomain,
