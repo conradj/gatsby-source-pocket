@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-pocket",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Fetch data from Pocket API",
   "main": "gatsby-node.js",
   "scripts": {
