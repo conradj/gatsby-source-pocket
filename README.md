@@ -9,7 +9,7 @@ An example site for this plugin is available:
 
 ## Breaking changes
 
-- v3.x - for `Gatsby@4`
+- v3.x - for `Gatsby@4` and `Gatsby@5`
 - v2.x - for `Gatsby@3` and lower
 
 ## How to Use
@@ -35,18 +35,18 @@ module.exports = {
         weeksOfHistory: 52,
         apiMaxRecordsToReturn: 3000,
         getCurrentWeekOnly: `n`,
-        stateFilterString: "archive",
+        stateFilterString: 'archive',
         tagFilter: false,
-        tagFilterString: "_untagged_",
+        tagFilterString: '_untagged_',
         favouriteFilter: false,
         favouriteFilterValue: 0,
         searchFilter: false,
-        searchFilterString: "These 21 things",
+        searchFilterString: 'These 21 things',
         domainFilter: false,
-        domainFilterString: "buzzfeed.com"
-      }
-    }
-  ]
+        domainFilterString: 'buzzfeed.com',
+      },
+    },
+  ],
 };
 ```
 
