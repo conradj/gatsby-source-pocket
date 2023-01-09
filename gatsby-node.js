@@ -89,39 +89,36 @@ exports.sourceNodes = async (
   );
 
   // Fetch up to apiMaxRecordsToReturn from Pocket API. If more than maxItemsToFetchInOneCall, do it in several requests.
-  var done = false;
-  var i = 0;
-  var itemsFetched = 0;
-  var maxItemsToFetchInOneCall = 5000;
-  var totalItemsToFetch = pocketCallParams.count;
+  var done = false
+  var i = 0
+  var itemsFetched = 0
+  var maxItemsToFetchInOneCall = 5000
+  var totalItemsToFetch = pocketCallParams.count
   if (totalItemsToFetch > maxItemsToFetchInOneCall) {
     // apiMaxRecordsToReturn (= pocketCallParams.count) contains the TOTAL number of items to be returned.
     // So if it's higher than maxItemsToFetchInOneCall, adjust the number of items to fetch per call.
-    pocketCallParams.count = maxItemsToFetchInOneCall;
+    pocketCallParams.count = maxItemsToFetchInOneCall
   }
-  var allFetchedItems = {};
+  var allFetchedItems = {}
   while (done === false) {
-    pocketCallParams.sort = 'newest';
-    pocketCallParams.offset = i * maxItemsToFetchInOneCall;
+    pocketCallParams.sort = 'newest'
+    pocketCallParams.offset = i*maxItemsToFetchInOneCall
     var resp = await pocketService
       .fetchArticles(pocketClient, pocketCallParams)
       .catch((e) => console.log(e));
     if (Object.keys(resp.list).length === 0) {
-      done = true;
-    } else {
-      allFetchedItems = Object.assign(allFetchedItems, resp.list);
+      done = true
     }
-    itemsFetched = itemsFetched + Object.keys(resp.list).length;
-    if (itemsFetched >= totalItemsToFetch) done = true;
-    i++;
+    else {
+      allFetchedItems = Object.assign(allFetchedItems, resp.list)
+    }
+    itemsFetched = itemsFetched + Object.keys(resp.list).length
+    if (itemsFetched >= totalItemsToFetch) done = true
+    i++
   }
   // Put the result in property "list" of object "resp".
-  resp = { list: allFetchedItems };
-  reporter.info(
-    '[gatsby-source-pocket] Fetched ' +
-      Object.keys(allFetchedItems).length +
-      ' Pocket items'
-  );
+  resp = { list: allFetchedItems} 
+  reporter.info('[gatsby-source-pocket] Fetched ' + Object.keys(allFetchedItems).length + " Pocket items")
 
   const data = pocketResponseToArticlesArray(resp);
 
