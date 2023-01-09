@@ -1,9 +1,9 @@
-const pocketService = require('./pockerService');
-const startOfDay = require('date-fns/startOfDay');
-const startOfWeek = require('date-fns/startOfWeek');
-const format = require('date-fns/format');
-const subWeeks = require('date-fns/subWeeks');
-const { URL } = require('url');
+const pocketService = require("./pockerService");
+const startOfDay = require("date-fns/startOfDay");
+const startOfWeek = require("date-fns/startOfWeek");
+const format = require("date-fns/format");
+const subWeeks = require("date-fns/subWeeks");
+const { URL } = require("url");
 
 function getUnixTimeToGetArticlesFrom(pluginOptions) {
   // get the data since the last time it was run, or from the earliest week
@@ -13,7 +13,7 @@ function getUnixTimeToGetArticlesFrom(pluginOptions) {
   );
 
   // override - usually used in prod just to update current and last week on a nightly update after the first full generation.
-  if (pluginOptions.getCurrentWeekOnly.toLowerCase() === 'y') {
+  if (pluginOptions.getCurrentWeekOnly.toLowerCase() === "y") {
     lastGeneratedDateStamp = startOfWeek(subWeeks(new Date(), 1));
   }
 
@@ -22,7 +22,7 @@ function getUnixTimeToGetArticlesFrom(pluginOptions) {
   );
 
   if (isNaN(unixTimeToGetArticlesFrom)) {
-    throw new Error('set a pocket start date in options');
+    throw new Error("set a pocket start date in options");
   }
 
   return unixTimeToGetArticlesFrom;
@@ -32,9 +32,9 @@ function getApiParamOptions(unixTimeToGetArticlesFrom, pluginOptions) {
   // get/retrieve/search parameters.
   // See https://getpocket.com/developer/docs/v3/retrieve for full list of available params.
   let params = {
-    sort: 'newest',
+    sort: "newest",
     count: parseInt(pluginOptions.apiMaxRecordsToReturn),
-    detailType: 'complete',
+    detailType: "complete",
     state: pluginOptions.stateFilterString,
     since: unixTimeToGetArticlesFrom,
   };
@@ -68,7 +68,7 @@ function pocketResponseToArticlesArray(pocketApiResults) {
   );
 }
 
-const POCKET_ARTICLE_NODE_TYPE = 'PocketArticle';
+const POCKET_ARTICLE_NODE_TYPE = "PocketArticle";
 
 exports.sourceNodes = async (
   { actions, createNodeId, createContentDigest, getNodesByType, reporter },
@@ -138,21 +138,13 @@ exports.sourceNodes = async (
 
     const articleDomain = Boolean(datum.resolved_url)
       ? new URL(datum.resolved_url).hostname
-      : '';
+      : "";
 
     const tags = datum.tags ? Object.keys(datum.tags) : [];
 
-    const readDay = datum.time_read
-      ? parseInt(
-          format(startOfDay(new Date(parseInt(datum.time_read) * 1000)), 'X')
-        )
-      : 0;
+    const readDay = datum.time_read ? parseInt(format(startOfDay(new Date(parseInt(datum.time_read) * 1000)), "X")) : 0
 
-    const readWeek = datum.time_read
-      ? parseInt(
-          format(startOfWeek(new Date(parseInt(datum.time_read) * 1000)), 'X')
-        )
-      : 0;
+    const readWeek = datum.time_read ? parseInt(format(startOfWeek(new Date(parseInt(datum.time_read) * 1000)), "X")) : 0
 
     createNode({
       id: createNodeId(`${POCKET_ARTICLE_NODE_TYPE}-${datum.item_id}`),
