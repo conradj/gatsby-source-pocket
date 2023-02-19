@@ -1,4 +1,16 @@
-# gatsby-source-pocket
+**☠️ THIS PROJECT IS NO LONGER MAINTAINED ☠️**
+
+**Please use [gatsby-source-pocketapi](https://github.com/Vacilando/) instead 🚀**
+
+
+---
+
+
+
+
+
+
+# gatsby-source-pocket (deprecated)
 
 Fetch data from Pocket API.
 
