@@ -1,6 +1,6 @@
 **☠️ THIS PROJECT IS NO LONGER MAINTAINED ☠️**
 
-**Please use [gatsby-source-pocketapi](https://github.com/Vacilando/) instead 🚀**
+**Please use [gatsby-source-pocketapi](https://github.com/Vacilando/gatsby-source-pocketapi) instead 🚀**
 
 
 ---
